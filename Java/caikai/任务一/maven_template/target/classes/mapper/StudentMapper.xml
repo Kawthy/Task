@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的-->
+
+<mapper namespace="com.kawthy.Dao.StudentDao">
+
+    <!--通过ID查询信息-->
+    <select id="GetStudent" parameterType="long" resultType="com.kawthy.utils.Student">
+        select * from Student where id = #{id}
+    </select>
+
+    <!--插入一条数据,因为字段太多,这里只插入姓名与QQ-->
+    <insert id="AddStudent" parameterType="com.kawthy.utils.Student">
+      insert into Student(name,qq) values(#{name},#{qq})
+    </insert>
+
+    <!--通过ID删除信息-->
+    <delete id="DeleteStudent" parameterType="long">
+        delete from student where id = #{id}
+    </delete>
+
+    <!--更新一条数据,因为字段太多,这里只更新姓名与QQ-->
+    <update id="UpdateStudent" parameterType="com.kawthy.utils.Student">
+        update Student set name=#{name},qq=#{qq} where id = #{id}
+    </update>
+</mapper>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.2.xsd">
+
+    <!--使用context命名空间，通过spring扫描指定包及其所有子包下所有bean的实现类，进行注解解析-->
+    <context:component-scan base-package="com.kawthy">
+    </context:component-scan>
+
+    <!--属性占位文件引入，可以通过${属性名}获得属性文件中的内容-->
+    <context:property-placeholder location="classpath:jdbc.properties"/>
+
+    <!--将连接池放入spring容器-->
+    <bean id="datasource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://localhost:3306/Xstudents?useUnicode=true"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="mysql"></property>
+    </bean>
+
+    <!--<bean id="datasource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">-->
+        <!--<property name="driverClassName" value="${driverClass}"></property>-->
+        <!--<property name="url" value="${jdbcUrl}"></property>-->
+        <!--<property name="username" value="${username}"></property>-->
+        <!--<property name="password" value="${password}"></property>-->
+    <!--</bean>-->
+
+
+    <!--创建一个sql会话工厂bean，指定数据源 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+    <!--指定数据源-->
+    <property name="dataSource" ref="datasource"/>
+    <!--类型别名包，默认引入com.kawthy.utils下的所有类 -->
+    <property name="typeAliasesPackage" value="com.kawthy.utils"/>
+    <!--指定sql映射xml文件的路径 -->
+        <property name="mapperLocations"
+                  value="classpath:mapper/*Mapper.xml"></property>
+    </bean>
+
+    <!-- 创建一个sqlSession对象 -->
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory" />
+    </bean>
+
+    <!--自动扫描映射接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 指定sql会话工厂，在上面配置过的 -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <!-- 指定基础包，即自动扫描com.kawthy.Dao这个包以及它的子包下的所有映射接口类 -->
+        <property name="basePackage" value="com.kawthy.Dao"></property>
+    </bean>
+
+    <!--将jdbctemplate放入spring容器中，jdbctemplate的使用:jdbctemplate是spring整合jdbc的类，
+    直接在xml文件中配置，但是需要在jdbctemplate中配置连接池，然后在dao层操作数据库  -->
+    <bean name="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="datasource"></property>
+    </bean>
+</beans>
+
