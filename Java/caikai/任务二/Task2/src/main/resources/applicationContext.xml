@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.3.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+        http://www.springframework.org/schema/tx
+        http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+
+    <!-- 具体dao层包的位置在哪，视你新建的dao层java包而定 -->
+
+    <!--属性占位文件引入，可以通过${属性名}获得属性文件中的内容-->
+    <context:property-placeholder location="classpath:db.properties"/>
+    <!--使用context命名空间，通过spring扫描指定包及其所有子包下所有bean的实现类，进行注解解析-->
+    <context:component-scan base-package="com.kawthy">
+    </context:component-scan>
+
+    <!--定义一个jdbc数据源，创建一个驱动管理数据源的bean，使用C3p0连接池 -->
+    <bean id="datasource"
+          class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${db.driverClass}"/>
+        <property name="jdbcUrl" value="${db.jdbcUrl}"/>
+        <property name="user" value="${db.username}"/>
+        <property name="password" value="${db.password}"/>
+        <!-- 当连接池中的连接耗尽的时候c3p0一次同时获取的连接数 -->
+        <property name="acquireIncrement" value="${mysql.acquireIncrement}"></property>
+        <!-- 初始连接池大小 -->
+        <property name="initialPoolSize" value="${mysql.initialPoolSize}"></property>
+        <!-- 连接池中连接最小个数 -->
+        <property name="minPoolSize" value="${mysql.minPoolSize}"></property>
+        <!-- 连接池中连接最大个数 -->
+        <property name="maxPoolSize" value="${mysql.maxPoolSize}"></property>
+    </bean>
+
+    <!--创建一个sql会话工厂bean，指定数据源 -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <!--指定数据源-->
+        <property name="dataSource" ref="datasource"/>
+        <!--类型别名包，默认引入com.kawthy.utils下的所有类 -->
+        <property name="typeAliasesPackage" value="com.kawthy.utils"/>
+        <!--指定sql映射xml文件的路径 -->
+        <property name="mapperLocations"
+                  value="classpath:mapper/*Mapper.xml"></property>
+    </bean>
+
+    <!-- 创建一个sqlSession对象 -->
+    <bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg index="0" ref="sqlSessionFactory"/>
+    </bean>
+
+    <!--自动扫描映射接口-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <!-- 指定sql会话工厂，在上面配置过的 -->
+        <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"></property>
+        <!-- 指定基础包，即自动扫描com.kawthy这个包以及它的子包下的所有映射接口类 -->
+        <property name="basePackage" value="com.kawthy.Dao"></property>
+    </bean>
+
+
+    <!--ref需要注入一个类,即messageSource中要有 private/public UserBO userBO; 定义的并有其对应的get/set方法，-->
+    <!--userBO 要与name后的值一样,-->
+    <!--这样你在messageSource中就可以直接使用UserBO 里面的方法了-->
+    <bean id="messageSource"
+          class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <!--<property name="parentMessageSource" ref="userBO"/>-->
+        <property name="fallbackToSystemLocale"><value>false</value></property>
+        <property name="basenames">
+            <list>
+                <value>classpath:messages</value>
+            </list>
+        </property>
+        <property name="useCodeAsDefaultMessage" value="true"/>
+        <!-- 解决 ValidationMessage.properties错误信息文件的中文乱码问题 -->
+        <!--<property name="defaultEncoding" value="UTF-8" />-->
+        <!-- 资源文件编码格式 -->
+        <property name="fileEncodings" >
+            <props>
+                <prop key="classpath:messages">UTF-8</prop>
+            </props>
+        </property>
+        <!-- 对资源文件内容缓存时间，单位秒 -->
+        <property name="cacheSeconds" value="120" />
+    </bean>
+
+
+    <!--&lt;!&ndash;5 声明式事务管理 &ndash;&gt;-->
+    <!--&lt;!&ndash;定义事物管理器，由spring管理事务 &ndash;&gt;-->
+    <!--<bean id="transactionManager"-->
+          <!--class="org.springframework.jdbc.datasource.DataSourceTransactionManager">-->
+        <!--<property name="dataSource" ref="datasource"></property>-->
+    <!--</bean>-->
+    <!--&lt;!&ndash;支持注解驱动的事务管理，指定事务管理器 &ndash;&gt;-->
+    <!--<tx:annotation-driven transaction-manager="transactionManager" />-->
+
+    <!--&lt;!&ndash;6 容器自动扫描IOC组件 &ndash;&gt;-->
+
+
+    <!--&lt;!&ndash;7 aspectj支持自动代理实现AOP功能 &ndash;&gt;-->
+    <!--<aop:aspectj-autoproxy proxy-target-class="true"></aop:aspectj-autoproxy>-->
+</beans>
+
