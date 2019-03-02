@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+         http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-4.3.xsd
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
+    <!-- 自动扫描包，实现支持注解的IOC -->
+    <context:component-scan base-package="com.kawthy.Controllers" />
+    <context:component-scan base-package="com.kawthy.Dao" />
+    <!-- Spring MVC不处理静态资源 -->
+    <mvc:default-servlet-handler />
+    <!--支持各类注解类, 如ResponseBody, RequestBody, JSON/XMl转化.-->
+    <context:annotation-config/>
+    <mvc:annotation-driven />
+    <!-- 支持mvc注解驱动 -->
+    <mvc:annotation-driven enable-matrix-variables="true" />
+
+    <!-- 配置映射媒体类型的策略 -->
+    <bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping">
+        <property name="removeSemicolonContent" value="false" />
+    </bean>
+
+
+    <!-- 内部视图解析器，JSP与JSTL模板 -->
+    <bean
+            class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+            id="internalResourceViewResolver">
+        <!--指定视图渲染类 -->
+        <property name="viewClass"
+                  value="org.springframework.web.servlet.view.JstlView" />
+        <!--自动添加到路径中的前缀 -->
+        <!--<property name="prefix" value="/WEB-INF/views/jstl/" />-->
+        <!--自动添加到路径中的后缀 -->
+        <property name="suffix" value=".jsp" />
+        <!--设置所有视图的内容类型，如果视图本身设置内容类型视图类可以忽略 -->
+        <property name="contentType" value="text/html;charset=UTF-8" />
+        <!-- 优先级，越小越前  原来是2-->
+        <property name="order" value="1" />
+    </bean>
+
+    <!--&lt;!&ndash; FreeMarker视图解析器与属性配置 &ndash;&gt;-->
+    <!--<bean id="viewResolver"-->
+          <!--class="org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver">-->
+        <!--&lt;!&ndash;是否启用缓存 &ndash;&gt;-->
+        <!--<property name="cache" value="true" />-->
+        <!--&lt;!&ndash;自动添加到路径中的前缀 &ndash;&gt;-->
+        <!--<property name="prefix" value="" />-->
+        <!--&lt;!&ndash;自动添加到路径中的后缀 &ndash;&gt;-->
+        <!--<property name="suffix" value=".html" />-->
+        <!--&lt;!&ndash;指定视图渲染类 &ndash;&gt;-->
+        <!--<property name="viewClass"-->
+                  <!--value="org.springframework.web.servlet.view.freemarker.FreeMarkerView" />-->
+        <!--&lt;!&ndash; 设置是否暴露Spring的macro辅助类库，默认为true &ndash;&gt;-->
+        <!--<property name="exposeSpringMacroHelpers" value="true" />-->
+        <!--&lt;!&ndash; 是否应将所有request属性添加到与模板合并之前的模型。默认为false。 &ndash;&gt;-->
+        <!--<property name="exposeRequestAttributes" value="true" />-->
+        <!--&lt;!&ndash; 是否应将所有session属性添加到与模板合并之前的模型。默认为false。 &ndash;&gt;-->
+        <!--<property name="exposeSessionAttributes" value="true" />-->
+        <!--&lt;!&ndash; 在页面中使用${rc.contextPath}就可获得contextPath &ndash;&gt;-->
+        <!--<property name="requestContextAttribute" value="rc" />-->
+        <!--&lt;!&ndash;设置所有视图的内容类型，如果视图本身设置内容类型视图类可以忽略 &ndash;&gt;-->
+        <!--<property name="contentType" value="text/html;charset=UTF-8" />-->
+        <!--&lt;!&ndash; 优先级，越小越前 &ndash;&gt;-->
+        <!--<property name="order" value="1" />-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash; 配置FreeMarker细节 &ndash;&gt;-->
+    <!--<bean id="freemarkerConfig"-->
+          <!--class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">-->
+        <!--&lt;!&ndash; 模板路径 &ndash;&gt;-->
+        <!--<property name="templateLoaderPath" value="/WEB-INF/views/ftl" />-->
+        <!--<property name="freemarkerSettings">-->
+            <!--<props>-->
+                <!--&lt;!&ndash; 刷新模板的周期，单位为秒 &ndash;&gt;-->
+                <!--<prop key="template_update_delay">5</prop>-->
+                <!--&lt;!&ndash;模板的编码格式 &ndash;&gt;-->
+                <!--<prop key="defaultEncoding">UTF-8</prop>-->
+                <!--&lt;!&ndash;url编码格式 &ndash;&gt;-->
+                <!--<prop key="url_escaping_charset">UTF-8</prop>-->
+                <!--&lt;!&ndash;此属性可以防止模板解析空值时的错误 &ndash;&gt;-->
+                <!--<prop key="classic_compatible">true</prop>-->
+                <!--&lt;!&ndash;该模板所使用的国际化语言环境选项 &ndash;&gt;-->
+                <!--<prop key="locale">zh_CN</prop>-->
+                <!--&lt;!&ndash;布尔值格式 &ndash;&gt;-->
+                <!--<prop key="boolean_format">true,false</prop>-->
+                <!--&lt;!&ndash;日期时间格式 &ndash;&gt;-->
+                <!--<prop key="datetime_format">yyyy-MM-dd HH:mm:ss</prop>-->
+                <!--&lt;!&ndash;时间格式 &ndash;&gt;-->
+                <!--<prop key="time_format">HH:mm:ss</prop>-->
+                <!--&lt;!&ndash;数字格式 &ndash;&gt;-->
+                <!--<prop key="number_format">0.######</prop>-->
+                <!--&lt;!&ndash;自动开启/关闭空白移除，默认为true &ndash;&gt;-->
+                <!--<prop key="whitespace_stripping">true</prop>-->
+            <!--</props>-->
+        <!--</property>-->
+    <!--</bean>-->
+
+    <!--&lt;!&ndash;文件上传解析器 &ndash;&gt;-->
+    <!--&lt;!&ndash;Spring MVC默认不能识别multipart格式的文件内容 &ndash;&gt;-->
+    <!--<bean id="multipartResolver"-->
+          <!--class="org.springframework.web.multipart.support.StandardServletMultipartResolver">-->
+    <!--</bean>-->
+
+</beans>
