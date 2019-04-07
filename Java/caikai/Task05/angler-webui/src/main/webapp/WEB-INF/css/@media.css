@@ -1,0 +1,94 @@
+@media screen and (min-width: 1200px) {
+    .botle-none {
+        background: url(../images/head.png)
+        no-repeat;
+        display:none;
+        background-position: -10px -183px;
+        width: 30px;
+        height: 31px;
+    }
+    .box {
+        margin: 10px;
+    }
+    .firm {
+        display: flex;
+        align-items: center;
+        padding-left: 10rem;
+    }
+    .top {
+        height: 51px;
+        background-color: #29b078;
+    }
+}
+@media screen and (min-width: 992px) {
+    .botle-none {
+        background: url(../images/head.png)
+        no-repeat;
+        display:none;
+        background-position: -10px -183px;
+        width: 30px;
+        height: 31px;
+    }
+    .box {
+        margin: 10px;
+    }
+}
+@media screen and (max-width: 768px) {
+    .rest {
+        display:none;
+    }
+    .state-right {
+        padding-right: 50px;
+        font-size: 1.5vh;
+        color: #999999;
+    }
+    .jok {
+        padding-right: 25px;
+        font-size: 1.5vh;
+        color: #999999;
+    }
+    .datd {
+        display: block;
+        margin: 0 0 0px 8px;
+        width: 20vh;
+        padding-right: 117px;
+    }
+    .firm-one {
+        display: inline-block;
+        margin: 0 0 20px 0;
+    }
+    .row-left{
+        display: flex;
+        flex-wrap: wrap;
+        height: 100%; 
+        font-size: 1.2vh;
+    }
+    .box {
+        margin: 10px;
+    }
+    .code {
+        margin-bottom: 10px;
+    }
+    .peer-boss {
+        text-align: center;
+    }
+    .say-top {
+        text-indent: 30px;
+        padding: 20px;
+        margin: 0;
+    }
+    .say-txt {
+        padding-top: 0;
+    }
+    .branch b {
+        float: center;
+    }
+    .navbar-header {
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        background-clip: #29b078;
+    }
+    .money {
+        padding: 5px 0;
+    }
+}
