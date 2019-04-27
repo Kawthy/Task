@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- class annotation related... start -->
+    <context:component-scan base-package="com.ssm"/>
+    <!-- class annotation related... end -->
+
+    <!-- 配置JedisPoolConfig实例 -->
+    <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxIdle" value="300"/>
+        <property name="maxTotal" value="600"/>
+        <property name="maxWaitMillis" value="1000"/>
+        <property name="testOnBorrow" value="true"/>
+    </bean>
+
+
+    <bean id="mobileAccountService" class="org.springframework.remoting.rmi.RmiProxyFactoryBean">
+        <!--8080端口对应服务端tomcat端口-->
+        <!--localhost对应服务端的ip-->
+        <!--RpcUserService暴露的服务名称-->
+        <property name="serviceUrl" value="rmi://localhost:1080/RpcUserService"/>
+        <!-- 接口为client包里的接口，跟服务端的一致-->
+        <!-- 接口的实现调用服务端暴露的远程服务-->
+        <property name="refreshStubOnConnectFailure" value="true"/>
+        <property name="lookupStubOnStartup" value="false"/>
+        <property name="serviceInterface"
+                  value="com.ssm.service.IUserService"/>
+    </bean>
+
+    <bean id="stringRedisSerializer" class="org.springframework.data.redis.serializer.StringRedisSerializer"/>
+
+    <!-- 配置JedisConnectionFactory -->
+    <bean id="jedisConnectionFactory"
+          class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory">
+        <property name="hostName" value="127.0.0.1"/>
+        <property name="port" value="6379"/>
+        <!-- <property name="password" value="${redis.pass}" /> -->
+        <property name="database" value="0"/>
+        <property name="poolConfig" ref="poolConfig"/>
+    </bean>
+    <!-- 配置RedisTemplate -->
+    <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate">
+        <property name="connectionFactory" ref="jedisConnectionFactory"/>
+        <property name="hashKeySerializer" ref="stringRedisSerializer"/>
+        <property name="keySerializer" ref="stringRedisSerializer"/>
+    </bean>
+
+    <!-- 配置RedisCacheManager -->
+    <bean id="redisCacheManager" class="org.springframework.data.redis.cache.RedisCacheManager">
+        <constructor-arg name="redisOperations" ref="redisTemplate" />
+        <property name="defaultExpiration" value="3000" />
+        <!-- 配置缓存区间 -->
+        <property name="cacheNames">
+            <list>
+                <value>aboutUser</value>
+            </list>
+        </property>
+    </bean>
+
+    <!-- 配置RedisCacheConfig -->
+    <bean id="redisCacheConfig" class="com.ssm.utils.RedisCacheConfig">
+        <constructor-arg ref="jedisConnectionFactory"/>
+        <constructor-arg ref="redisTemplate"/>
+        <constructor-arg ref="redisCacheManager"/>
+    </bean>
+</beans>
